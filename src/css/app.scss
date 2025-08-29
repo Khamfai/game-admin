@@ -5,6 +5,14 @@
   src: url('assets/fonts/NotoSansLao.ttf') format('truetype');
 }
 
+:root {
+  --primary-color: #e6e6e6;
+  --text-color: #061227;
+  --background-color: #061227;
+  --header-background-color: #d3d3d4;
+  --text-color-secondary: #030108b4;
+}
+
 body {
   font-family: 'NotoSansLao', sans-serif;
 }

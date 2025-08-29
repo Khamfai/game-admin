@@ -1,8 +1,8 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="header">
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn flat dense round color="primary" icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
@@ -12,7 +12,11 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header>
+          <div>
+            <div class="text-h6">Game Service</div>
+          </div>
+        </q-item-label>
 
         <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
       </q-list>
@@ -30,46 +34,58 @@ import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink
 
 const linksList: EssentialLinkProps[] = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
+    title: 'Dashboard',
+    caption: 'ໜ້າຫລັກ',
+    icon: 'dashboard',
+    link: '/#/admin',
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
+    title: 'Roles',
+    caption: 'ສິດທີຜູ້ໃຊ້ລະບົບ',
+    icon: 'security',
+    link: '/#/admin/roles',
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
+    title: 'Permissions',
+    caption: 'ສິດຈັດການຂໍ້ມູນ',
+    icon: 'mdi-shield-account',
+    link: '/#/admin/permissions',
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
+    title: 'Sellers',
+    caption: 'ຕົວແທນການຂາຍ',
     icon: 'record_voice_over',
     link: 'https://forum.quasar.dev',
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
+    title: 'Providers',
+    caption: 'ຜູ້ໃຫ້ບໍລິການ',
+    icon: 'mdi-handshake',
+    link: '/#/admin/providers',
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
+    title: 'Services',
+    caption: 'ບໍລິການເກມ ແລະ ອື່ນໆ',
+    icon: 'mdi-controller',
+    link: '/#/admin/services',
   },
   {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    title: 'Packages',
+    caption: 'ແພັກເກັດບໍລິການ',
+    icon: 'token',
+    link: '/#/admin/packages',
+  },
+  {
+    title: 'Topups',
+    caption: 'ໂຄຕາການເຕີມ',
+    icon: 'account_balance_wallet',
+    link: '/#/admin/topups',
+  },
+  {
+    title: 'Transactions',
+    caption: 'ປະຫວັດການເຕີມເກມ',
+    icon: 'mdi-paper-roll',
+    link: '/#/admin/transactions',
   },
 ];
 
@@ -79,3 +95,11 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 </script>
+
+<style scoped>
+.header {
+  background-color: #e0e1e1;
+  color: var(--text-color);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+</style>

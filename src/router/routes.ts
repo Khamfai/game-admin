@@ -11,26 +11,6 @@ const routes: RouteRecordRaw[] = [
     },
   },
 
-  {
-    path: '/login',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/LoginPage.vue') }],
-    meta: {
-      title: 'Login',
-      layout: 'main',
-    },
-  },
-
-  {
-    path: '/signup',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/SignupPage.vue') }],
-    meta: {
-      title: 'Sign Up',
-      layout: 'main',
-    },
-  },
-
   // Admin routes
   {
     path: '/admin',
@@ -49,7 +29,73 @@ const routes: RouteRecordRaw[] = [
           requiresPermission: ['all'],
         },
       },
+      {
+        path: 'roles',
+        component: () => import('pages/admin/manages/RolePage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'permissions',
+        component: () => import('pages/admin/manages/PermissionPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'providers',
+        component: () => import('pages/admin/manages/ProviderPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'services',
+        component: () => import('pages/admin/manages/ServicePage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'packages',
+        component: () => import('pages/admin/manages/PackagePage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'topups',
+        component: () => import('pages/admin/transactions/TopupPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'transactions',
+        component: () => import('pages/admin/transactions/TransactionPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
     ],
+  },
+
+  // Auth routes
+  {
+    path: '/login',
+    component: () => import('pages/LoginPage.vue'),
+    meta: {
+      title: 'Login',
+    },
+  },
+
+  {
+    path: '/signup',
+    component: () => import('pages/SignupPage.vue'),
+    meta: {
+      title: 'Sign Up',
+    },
   },
 
   // Unauthorized page
@@ -58,7 +104,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/UnauthorizedPage.vue'),
     meta: {
       title: 'Unauthorized',
-      layout: 'main',
     },
   },
 
@@ -69,7 +114,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/ErrorNotFound.vue'),
     meta: {
       title: 'Page Not Found',
-      layout: 'main',
     },
   },
 ];

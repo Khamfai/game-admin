@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { User } from 'app/interfaces/user';
+import { User } from 'src/interfaces/user';
 
 const useProfileStore = defineStore(
   'profile',

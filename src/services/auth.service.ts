@@ -1,5 +1,5 @@
 import { useAuthStore, type AuthTokens } from 'src/stores/auth-store';
-import { LoginCredentials, LoginResponse, UserRegister } from '../../interfaces/user';
+import { LoginCredentials, LoginResponse, UserRegister } from '../interfaces/user';
 import { api } from 'src/boot/axios';
 import useProfileStore from 'src/stores/profile-store';
 const authStore = useAuthStore();

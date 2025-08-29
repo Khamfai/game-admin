@@ -19,16 +19,21 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   // Global navigation guard
   Router.beforeEach((to, from, next) => {
     try {
+      if (!to.meta?.requiresAuth) {
+        next();
+        return;
+      }
+
       const { isAuthenticated, to: nextTo } = authMiddleware.execute({ to, from, next });
       if (isAuthenticated) {
         next();
         return;
-      } else if (to.name !== 'login') {
+      } else if (to.path !== '/login') {
         next(nextTo);
         return;
       }
     } catch (error) {
-      if (to.name !== 'login') {
+      if (to.path !== '/login') {
         next({ path: '/login', query: { redirect: to.fullPath } });
       }
     }

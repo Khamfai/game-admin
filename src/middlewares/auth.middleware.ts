@@ -8,15 +8,15 @@ export class AuthMiddleware implements Middleware {
 
   execute(context: MiddlewareContext) {
     const { to } = context;
+    const redirect = to.fullPath !== 'login' ? to.fullPath : undefined;
     try {
       const authStore = useAuthStore();
-
-      if (!to.meta?.requiresAuth) {
-        return { isAuthenticated: false, to: { name: 'login', path: '/login', query: { redirect: to.fullPath } } };
-      }
+      // if (!to.meta?.requiresAuth) {
+      //   return { isAuthenticated: false, to: { path: '/login', fullPath: '/login', query: { redirect } } };
+      // }
 
       if (!authStore.isAuthenticated || !authStore.accessToken) {
-        return { isAuthenticated: false, to: { name: 'login', path: '/login', query: { redirect: to.fullPath } } };
+        return { isAuthenticated: false, to: { path: '/login', fullPath: '/login', query: { redirect } } };
       }
 
       const payload: AuthPayload = jwtDecode(authStore.accessToken);
@@ -25,7 +25,7 @@ export class AuthMiddleware implements Middleware {
       if (to.meta?.requiresRole) {
         const requiredRoles = Array.isArray(to.meta.requiresRole) ? to.meta.requiresRole : [to.meta.requiresRole];
         if (!requiredRoles.includes(payload.role)) {
-          return { isAuthenticated: false, to: { name: 'unauthorized', path: '/unauthorized' } };
+          return { isAuthenticated: false, to: { path: '/unauthorized', fullPath: '/unauthorized' } };
         }
 
         // if (to.name === 'login') {
@@ -42,13 +42,13 @@ export class AuthMiddleware implements Middleware {
         const hasPermission = requiredPermissions.some((permission) => payload.permissions?.includes(permission));
 
         if (!hasPermission) {
-          return { isAuthenticated: false, to: { name: 'unauthorized', path: '/unauthorized' } };
+          return { isAuthenticated: false, to: { path: '/unauthorized', fullPath: '/unauthorized' } };
         }
       }
 
       return { isAuthenticated: true, to: to };
     } catch (error) {
-      return { isAuthenticated: false, to: { name: 'login', path: '/login', query: { redirect: to.fullPath } } };
+      return { isAuthenticated: false, to: { path: '/login', fullPath: '/login', query: { redirect } } };
     }
   }
 }

@@ -1,104 +1,104 @@
 <template>
-  <q-page>
-    <div class="bg row justify-center items-center">
-      <div class="card col-md-4 col-sm-8 col-xs-12">
-        <div class="row justify-start">
-          <q-btn
-            label="Login"
-            size="md"
-            flat
-            icon="mdi-arrow-left"
-            style="height: 45px"
-            no-caps
-            @click="router.push('/login')"
-          />
-        </div>
-        <div>
-          <h4 class="text-h4 text-center text-bold">ລົງທະບຽນ</h4>
-        </div>
-        <q-card-section class="q-gutter-y-xs">
-          <div class="text-bold input-label">Username</div>
-          <q-input
-            v-model="user.username"
-            outlined
-            rounded
-            placeholder="Enter username"
-            :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="mdi-account-circle" />
-            </template>
-          </q-input>
-
-          <div class="text-bold input-label">Email</div>
-          <q-input v-model="user.email" outlined placeholder="Enter email">
-            <template v-slot:prepend>
-              <q-icon name="mdi-account-circle" />
-            </template>
-          </q-input>
-
-          <div class="text-bold input-label">Phone</div>
-          <q-input v-model="user.phone" outlined rounded placeholder="Enter phone number">
-            <template v-slot:prepend>
-              <q-icon name="mdi-account-circle" />
-            </template>
-          </q-input>
-
-          <div class="text-bold input-label">Password</div>
-          <q-input
-            v-model="user.password"
-            :type="isVisible ? 'text' : 'password'"
-            outlined
-            rounded
-            placeholder="Enter password"
-            :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="mdi-key" />
-            </template>
-            <template v-if="user.password.length > 0" v-slot:append>
-              <q-icon :name="isVisible ? 'mdi-eye' : 'mdi-eye-off'" @click="isVisible = !isVisible" />
-            </template>
-          </q-input>
-
-          <div class="text-bold input-label">Confirm Password</div>
-          <q-input
-            v-model="confirmPassword"
-            :type="isVisible ? 'text' : 'password'"
-            outlined
-            rounded
-            placeholder="Enter password"
-            :rules="[
-              (val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ',
-              (val) => val === user.password || 'ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ',
-            ]"
-          >
-            <template v-slot:prepend>
-              <q-icon name="mdi-key" />
-            </template>
-            <template v-if="user.password.length > 0" v-slot:append>
-              <q-icon :name="isVisible ? 'mdi-eye' : 'mdi-eye-off'" @click="isVisible = !isVisible" />
-            </template>
-          </q-input>
-        </q-card-section>
-        <q-card-actions style="height: 150px; padding: 0px 15px">
-          <q-btn
-            label="Register"
-            size="md"
-            color="positive"
-            rounded
-            class="full-width"
-            style="height: 45px"
-            @click="register"
-          />
-        </q-card-actions>
+  <!-- <q-page> -->
+  <div class="fullscreen bg row justify-center items-center">
+    <div class="card col-md-4 col-sm-8 col-xs-12">
+      <div class="row justify-start">
+        <q-btn
+          label="Login"
+          size="md"
+          flat
+          icon="mdi-arrow-left"
+          style="height: 45px"
+          no-caps
+          @click="router.push('/login')"
+        />
       </div>
+      <div>
+        <h4 class="text-h4 text-center text-bold">ລົງທະບຽນ</h4>
+      </div>
+      <q-card-section class="q-gutter-y-xs">
+        <div class="text-bold input-label">Username</div>
+        <q-input
+          v-model="user.username"
+          outlined
+          rounded
+          placeholder="Enter username"
+          :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້']"
+        >
+          <template v-slot:prepend>
+            <q-icon name="mdi-account-circle" />
+          </template>
+        </q-input>
+
+        <div class="text-bold input-label">Email</div>
+        <q-input v-model="user.email" outlined placeholder="Enter email">
+          <template v-slot:prepend>
+            <q-icon name="mdi-account-circle" />
+          </template>
+        </q-input>
+
+        <div class="text-bold input-label">Phone</div>
+        <q-input v-model="user.phone" outlined rounded placeholder="Enter phone number">
+          <template v-slot:prepend>
+            <q-icon name="mdi-account-circle" />
+          </template>
+        </q-input>
+
+        <div class="text-bold input-label">Password</div>
+        <q-input
+          v-model="user.password"
+          :type="isVisible ? 'text' : 'password'"
+          outlined
+          rounded
+          placeholder="Enter password"
+          :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ']"
+        >
+          <template v-slot:prepend>
+            <q-icon name="mdi-key" />
+          </template>
+          <template v-if="user.password.length > 0" v-slot:append>
+            <q-icon :name="isVisible ? 'mdi-eye' : 'mdi-eye-off'" @click="isVisible = !isVisible" />
+          </template>
+        </q-input>
+
+        <div class="text-bold input-label">Confirm Password</div>
+        <q-input
+          v-model="confirmPassword"
+          :type="isVisible ? 'text' : 'password'"
+          outlined
+          rounded
+          placeholder="Enter password"
+          :rules="[
+            (val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ',
+            (val) => val === user.password || 'ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ',
+          ]"
+        >
+          <template v-slot:prepend>
+            <q-icon name="mdi-key" />
+          </template>
+          <template v-if="user.password.length > 0" v-slot:append>
+            <q-icon :name="isVisible ? 'mdi-eye' : 'mdi-eye-off'" @click="isVisible = !isVisible" />
+          </template>
+        </q-input>
+      </q-card-section>
+      <q-card-actions style="height: 150px; padding: 0px 15px">
+        <q-btn
+          label="Register"
+          size="md"
+          color="positive"
+          rounded
+          class="full-width"
+          style="height: 45px"
+          @click="register"
+        />
+      </q-card-actions>
     </div>
-  </q-page>
+  </div>
+  <!-- </q-page> -->
 </template>
 
 <script setup lang="ts">
-import { UserRegister } from 'app/interfaces/user';
+import { UserRegister } from 'src/interfaces/user';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { auth_service } from 'src/services/auth.service';
