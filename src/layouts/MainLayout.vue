@@ -7,7 +7,7 @@
         </q-toolbar-title>
         <q-list class="row">
           <q-item clickable @click="router.push('/login')">
-            <q-item-section >
+            <q-item-section>
               <q-item-label>Login</q-item-label>
             </q-item-section>
           </q-item>

@@ -10,22 +10,24 @@ export const provider_service = () => ({
     return response.data;
   },
 
-  getProviderById: async (id: string): Promise<ResponseData<Provider | null>> => {
+  getProviderById: async (id: number): Promise<ResponseData<Provider | null>> => {
     const response = await api.get(`${path}/${id}`);
     return response.data;
   },
 
   createProvider: async (provider: Provider): Promise<ResponseData<Provider | null>> => {
+    delete provider.id;
     const response = await api.post(path, provider);
     return response.data;
   },
 
-  updateProvider: async (id: string, provider: Provider): Promise<ResponseData<Provider | null>> => {
+  updateProvider: async (id: number, provider: Partial<Provider>): Promise<ResponseData<Provider | null>> => {
+    delete provider.id;
     const response = await api.put(`${path}/${id}`, provider);
     return response.data;
   },
 
-  deleteProvider: async (id: string): Promise<ResponseData<Provider | null>> => {
+  deleteProvider: async (id: number): Promise<ResponseData<Provider | null>> => {
     const response = await api.delete(`${path}/${id}`);
     return response.data;
   },

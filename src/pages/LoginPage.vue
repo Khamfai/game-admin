@@ -61,10 +61,10 @@
           @click="handleLogin"
         />
         <div class="row justify-between q-gutter-x-md" style="width: 100%">
-          <div class="cols-4"><a style="text-decoration: none;" href="/#/forgot-password">Forgot password?</a></div>
+          <div class="cols-4"><a style="text-decoration: none" href="/#/forgot-password">Forgot password?</a></div>
           <div class="cols-8">
             Get starting to seller account
-            <a style="text-decoration: none; font-weight: bold;" href="/#/signup">Sign up</a>
+            <a style="text-decoration: none; font-weight: bold" href="/#/signup">Sign up</a>
           </div>
         </div>
       </q-card-actions>
@@ -79,7 +79,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { auth_service } from 'src/services/auth.service';
 import { authMiddleware } from 'src/middlewares/auth.middleware';
-import useProfileStore from 'src/stores/profile-store';
 import { useAuthStore } from 'src/stores/auth-store';
 
 const router = useRouter();
@@ -87,7 +86,6 @@ const route = useRoute();
 const $q = useQuasar();
 const authService = auth_service();
 
-const profileStore = useProfileStore();
 const authStore = useAuthStore();
 
 const isVisible = ref(false);
@@ -101,7 +99,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated && authStore.accessToken) {
     const { isAuthenticated, to } = authMiddleware.execute({ to: route, from: route, next: () => {} });
     if (isAuthenticated && to.query?.redirect == null) {
-      const role = profileStore.profile?.role;
+      const role = authStore.userAuth?.role;
       await router.push(role === 'admin' ? '/admin' : '/');
     }
   }
@@ -122,7 +120,10 @@ const handleLogin = async () => {
       password: password.value,
     });
 
-    if (code === 200 && data) await router.push((route.query.redirect as string) || '/admin');
+    if (code === '200' && data != null)
+      if (data.user.role == 'admin') await router.push((route.query.redirect as string) || '/admin');
+      else await router.push('/seller');
+    else errorMessage.value = 'Login failed. Please try again.';
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Login failed. Please try again.';
 

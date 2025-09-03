@@ -10,22 +10,22 @@ export const permission_service = () => ({
     return response.data;
   },
 
-  getPermissionById: async (id: string): Promise<ResponseData<Permission | null>> => {
+  getPermissionById: async (id: number): Promise<ResponseData<Permission | null>> => {
     const response = await api.get(`${path}/${id}`);
     return response.data;
   },
 
   createPermission: async (permissionName: string): Promise<ResponseData<Permission | null>> => {
-    const response = await api.post(path, { permissionName });
+    const response = await api.post(path, { name: permissionName });
     return response.data;
   },
 
-  updatePermission: async (id: string, permissionName: string): Promise<ResponseData<Permission | null>> => {
-    const response = await api.put(`${path}/${id}`, { permissionName });
+  updatePermission: async (id: number, permissionName: string): Promise<ResponseData<Permission | null>> => {
+    const response = await api.put(`${path}/${id}`, { name: permissionName });
     return response.data;
   },
 
-  deletePermission: async (id: string): Promise<ResponseData<Permission | null>> => {
+  deletePermission: async (id: number): Promise<ResponseData<Permission | null>> => {
     const response = await api.delete(`${path}/${id}`);
     return response.data;
   },

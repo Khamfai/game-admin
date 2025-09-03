@@ -6,7 +6,8 @@ export interface Provider {
   callBackUrl?: string | null;
   increment?: number | null;
   excRate: number;
-  isEnable?: boolean | null;
+  balance?: number | null;
+  isEnable: boolean|null;
   isDelete?: boolean | null;
   createdAt?: number | null;
   updatedAt?: number | null;

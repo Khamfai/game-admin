@@ -30,7 +30,7 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   status: string;
-  code: number;
+  code: string;
   message: string;
   data: {
     token: string;

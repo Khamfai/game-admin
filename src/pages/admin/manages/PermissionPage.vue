@@ -1,11 +1,263 @@
 <template>
-  <q-page>
-    <div class="row">
-      <div class="col-12">
-        <h1>Permission Page</h1>
-      </div>
+  <q-page class="q-pa-md">
+    <div class="row cus-card-table">
+      <q-table
+        title="ສິດທີຂອງຜູ້ໃຊ້ງານລະບົບ"
+        flat
+        :rows="permissions"
+        :columns="columns"
+        row-key="roleName"
+        class="full-width"
+        :pagination="pagination"
+        :rows-per-page-options="[5, 10, 20, 50]"
+        @update:pagination="getPermissions($event)"
+        :loading="loading"
+      >
+        <template v-slot:top-right>
+          <q-btn color="secondary" outline round icon="add" size="sm" @click="dialog = true" />
+        </template>
+
+        <template v-slot:body-cell-createdAt="props">
+          <q-td :props="props">
+            <div>
+              <q-icon name="schedule" size="xs" color="green" class="q-mr-sm" />
+              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              <q-tooltip>
+                {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
+              </q-tooltip>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-updatedAt="props">
+          <q-td :props="props">
+            <div>
+              <q-icon name="update" size="xs" color="orange" class="q-mr-sm" />
+              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              <q-tooltip>
+                {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
+              </q-tooltip>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props" style="width: 100px">
+            <div class="row items-center justify-around">
+              <q-btn
+                outline
+                round
+                size="sm"
+                color="secondary"
+                icon="edit"
+                @click="editPermission(props.row)"
+                :disable="!isAdmin"
+              >
+                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+              </q-btn>
+              <q-btn
+                outline
+                round
+                size="sm"
+                color="negative"
+                icon="delete"
+                @click="deletePermission(props.row)"
+                :disable="!isAdmin"
+              >
+                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
+      </q-table>
     </div>
+
+    <q-dialog v-model="dialog" persistent>
+      <q-card style="width: 400px; border-radius: var(--rounded-md)">
+        <q-card-section class="row items-center">
+          <div class="text-subtitle1 text-bold">ແກ້ໄຂສິດທີການໃຊ້ລະບົບ</div>
+          <q-space />
+          <q-btn outline round size="sm" color="negative" icon="close" @click="colseAddDialog" />
+        </q-card-section>
+        <q-card-section>
+          <q-form ref="formRef">
+            <div class="input-label">ສິດທີການໃຊ້ລະບົບ</div>
+            <q-input
+              v-model="permission_model.name"
+              placeholder="ສິດທີການໃຊ້ລະບົບ"
+              outlined
+              rounded
+              clearable
+              :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການໃຊ້ລະບົບ']"
+            >
+              <template v-slot:prepend>
+                <q-icon name="security" />
+              </template>
+            </q-input>
+          </q-form>
+        </q-card-section>
+        <q-card-actions align="right" style="padding: 20px 10px">
+          <q-btn label="ຍົກເລີກ" outline color="negative" class="border-rounded-sm" @click="colseAddDialog" />
+          <q-btn label="ບັນທຶກ" color="secondary" class="border-rounded-sm" @click="savePermission" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="processing" persistent width="100%" height="100%">
+      <q-circular-progress v-if="processing" indeterminate size="100px" :thickness="0.15" color="primary" />
+    </q-dialog>
   </q-page>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { permission_service } from 'src/services/permission.service';
+import { formatDate, cfmBtnColor, cfmBtnText, cancelBtnColor, cancelBtnText, dialogDelay } from 'src/utils/utils';
+import { useAuthStore } from 'src/stores/auth-store';
+import { TablePagination } from 'src/interfaces/pagination';
+import Swal from 'sweetalert2';
+import { Permission } from 'src/interfaces/permission';
+
+const formRef = ref<any>(null);
+const authStore = useAuthStore();
+const permissionService = permission_service();
+const dialog = ref<boolean>(false);
+const loading = ref<boolean>(false);
+const processing = ref<boolean>(false);
+const isAdmin = authStore.userAuth?.role === 'admin';
+const pagination = ref<TablePagination>({
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 1,
+});
+
+const permissions = ref<Permission[]>([]);
+const permission_model = ref<Permission>({ id: null, name: '' });
+const columns = ref([
+  // { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'center' as const },
+  { name: 'name', label: 'ສິດທີການໃຊ້ລະບົບ', field: 'name', sortable: true, align: 'left' as const },
+  { name: 'createdAt', label: 'ວັນທີສ້າງ', field: 'createdAt', sortable: true, align: 'left' as const },
+  { name: 'updatedAt', label: 'ວັນທີແກ້ໄຂ', field: 'updatedAt', sortable: true, align: 'left' as const },
+  { name: 'actions', label: 'Actions', field: 'actions', sortable: false, align: 'center' as const },
+]);
+
+const colseAddDialog = () => {
+  dialog.value = false;
+  permission_model.value = { id: null, name: '' };
+};
+
+// Action handlers
+const editPermission = (permission: Permission) => {
+  dialog.value = true;
+  permission_model.value = permission;
+};
+
+const deletePermission = async (permission: Permission) => {
+  await Swal.fire({
+    title: 'ລຶບສິດທີການໃຊ້ລະບົບ',
+    icon: 'warning',
+    text: 'ຕ້ອງການລຶບສິດທີການໃຊ້ລະບົບນີ້ຫຼືບໍ່?',
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonColor: cfmBtnColor,
+    cancelButtonColor: cancelBtnColor,
+    confirmButtonText: cfmBtnText,
+    cancelButtonText: cancelBtnText,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await onDeletePermission(permission.id!);
+    }
+  });
+  permission_model.value = { id: null, name: '' };
+};
+
+const onDeletePermission = async (permission_id: number) => {
+  await permissionService.deletePermission(permission_id).then(async (response) => {
+    await Swal.fire({
+      title: response.message,
+      icon: response.code == '200' ? 'success' : 'error',
+      timer: dialogDelay,
+      confirmButtonColor: cfmBtnColor,
+    });
+    await getPermissions();
+  });
+};
+
+const savePermission = async () => {
+  try {
+    const isValid = await formRef.value.validate();
+    if (!isValid) {
+      return;
+    }
+
+    dialog.value = false;
+    processing.value = true;
+    if (permission_model.value.id) {
+      await updatePermission();
+    } else {
+      await addPermission();
+    }
+  } catch (error) {
+    processing.value = false;
+    await Swal.fire({
+      title: (error as Error).message,
+      icon: 'error',
+      confirmButtonColor: cfmBtnColor,
+    });
+  } finally {
+    permission_model.value = { id: null, name: '' };
+  }
+};
+
+const addPermission = async () => {
+  await permissionService.createPermission(permission_model.value.name).then(async (response) => {
+    processing.value = false;
+    await Swal.fire({
+      title: 'ສຳເລັດ',
+      text: 'ບັນທຶກສຳເລັດ',
+      icon: response.code == '201' ? 'success' : 'error',
+      timer: dialogDelay,
+    });
+    await getPermissions();
+  });
+};
+
+const updatePermission = async () => {
+  await permissionService
+    .updatePermission(permission_model.value.id!, permission_model.value.name)
+    .then(async (response) => {
+      processing.value = false;
+      await Swal.fire({
+        title: 'ສຳເລັດ',
+        text: 'ແກ້ໄຂສຳເລັດ',
+        icon: response.code == '200' ? 'success' : 'error',
+        timer: dialogDelay,
+        confirmButtonColor: cfmBtnColor,
+      });
+      void getPermissions();
+    });
+};
+
+const getPermissions = async (options?: { page: number; rowsPerPage: number }) => {
+  if (options && pagination.value.page == options.page) return;
+
+  const response = await permissionService.getPermissions();
+  permissions.value = response.data;
+  pagination.value.rowsNumber = response.total ?? 1;
+};
+
+onMounted(async () => {
+  try {
+    loading.value = true;
+    await getPermissions();
+    loading.value = false;
+  } catch (error) {
+    await Swal.fire({
+      title: (error as Error).message,
+      icon: 'error',
+      timer: dialogDelay,
+      confirmButtonColor: cfmBtnColor,
+    });
+  } finally {
+    loading.value = false;
+  }
+});
+</script>

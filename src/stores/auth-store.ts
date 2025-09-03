@@ -1,16 +1,27 @@
 import { jwtDecode } from 'jwt-decode';
 import { defineStore } from 'pinia';
+import { User } from 'src/interfaces/user';
 import { ref, computed } from 'vue';
 
 export interface AuthTokens {
   accessToken: string;
   refreshToken?: string | null;
+  userAuth?: {
+    uid: number;
+    role: string;
+    permissions: string[];
+  } | null;
 }
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const accessToken = ref<string | null>(null);
   const refreshToken = ref<string | null>(null);
+  const userAuth = ref<{
+    uid: number;
+    role: string;
+    permissions: string[];
+  } | null>(null);
   const isRefreshing = ref(false);
   const refreshSubscribers = ref<Array<(token: string) => void>>([]);
 
@@ -27,10 +38,26 @@ export const useAuthStore = defineStore('auth', () => {
   const setTokens = (tokens: AuthTokens) => {
     accessToken.value = tokens.accessToken;
     refreshToken.value = tokens.refreshToken || null;
+    userAuth.value = getUser();
 
     // Store in localStorage
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken || '');
+  };
+
+  const getUser = () => {
+    if (!accessToken.value) return null;
+
+    if (!userAuth.value) {
+      const decoded = jwtDecode(accessToken.value);
+      userAuth.value = decoded as {
+        uid: number;
+        role: string;
+        permissions: string[];
+      };
+    }
+
+    return userAuth.value;
   };
 
   const clearTokens = () => {
@@ -49,6 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (storedAccessToken && storedRefreshToken) {
       accessToken.value = storedAccessToken;
       refreshToken.value = storedRefreshToken;
+      getUser();
     }
   };
 
@@ -67,7 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
     isRefreshing.value = true;
 
     try {
-      const response = await fetch('/api/auth/refresh', {
+      const response = await fetch('/api/auth/ref-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,6 +144,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     isRefreshing,
+    userAuth,
 
     // Getters
     isAuthenticated,
@@ -127,5 +156,6 @@ export const useAuthStore = defineStore('auth', () => {
     loadTokensFromStorage,
     refreshAccessToken,
     logout,
+    getUser,
   };
 });
