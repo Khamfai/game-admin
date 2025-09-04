@@ -1,12 +1,13 @@
 import { api } from 'boot/axios';
 import { ResponseData } from 'src/interfaces/response';
 import { Provider } from 'src/interfaces/provider';
+import { Pagination } from 'src/interfaces/pagination';
 
 const path = '/v1/providers';
 
 export const provider_service = () => ({
-  getProviders: async (): Promise<ResponseData<Provider[]>> => {
-    const response = await api.get(path);
+  getProviders: async (pagination?: Pagination): Promise<ResponseData<Provider[]>> => {
+    const response = await api.get(path, { params: pagination });
     return response.data;
   },
 

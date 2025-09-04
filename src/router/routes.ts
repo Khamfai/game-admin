@@ -52,7 +52,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'services',
-        component: () => import('pages/admin/manages/ServicePage.vue'),
+        component: () => import('pages/admin/manages/GamePage.vue'),
         meta: {
           requiresPermission: ['all'],
         },
@@ -60,6 +60,21 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'packages',
         component: () => import('pages/admin/manages/PackagePage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'spacial-package/:packageId',
+        props: true,
+        component: () => import('pages/admin/manages/spacia-package/IndexPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'users',
+        component: () => import('pages/admin/manages/UserPage.vue'),
         meta: {
           requiresPermission: ['all'],
         },

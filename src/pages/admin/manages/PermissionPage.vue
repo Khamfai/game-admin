@@ -2,11 +2,11 @@
   <q-page class="q-pa-md">
     <div class="row cus-card-table">
       <q-table
-        title="ສິດທີຂອງຜູ້ໃຊ້ງານລະບົບ"
+        title="ສິດທີການຈັດການລະບົບ"
         flat
         :rows="permissions"
         :columns="columns"
-        row-key="roleName"
+        row-key="name"
         class="full-width"
         :pagination="pagination"
         :rows-per-page-options="[5, 10, 20, 50]"
@@ -14,14 +14,25 @@
         :loading="loading"
       >
         <template v-slot:top-right>
-          <q-btn color="secondary" outline round icon="add" size="sm" @click="dialog = true" />
+          <q-btn color="primary" outline round icon="add" size="sm" @click="dialog = true" />
         </template>
-
+        <template v-slot:no-data>
+          <div class="row items-center justify-center text-center" style="width: 100%; height: 200px">
+            <div v-if="loading == true" class="q-gutter-y-md">
+              <q-spinner v-if="loading" name="dots" color="primary" size="60px" />
+              <div class="text-subtitle2">Wait for data loading...</div>
+            </div>
+            <div v-else class="q-gutter-y-md">
+              <q-icon name="mdi-database-remove" size="60px" color="primary" />
+              <div class="text-subtitle2">Opps! Not found data</div>
+            </div>
+          </div>
+        </template>
         <template v-slot:body-cell-createdAt="props">
           <q-td :props="props">
             <div>
               <q-icon name="schedule" size="xs" color="green" class="q-mr-sm" />
-              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              {{ formatDate(props.value) }}
               <q-tooltip>
                 {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
               </q-tooltip>
@@ -32,7 +43,7 @@
           <q-td :props="props">
             <div>
               <q-icon name="update" size="xs" color="orange" class="q-mr-sm" />
-              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              {{ formatDate(props.value) }}
               <q-tooltip>
                 {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
               </q-tooltip>
@@ -46,12 +57,12 @@
                 outline
                 round
                 size="sm"
-                color="secondary"
+                color="primary"
                 icon="edit"
                 @click="editPermission(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+                <q-tooltip>ແກ້ໄຂຂໍ້ມູນ</q-tooltip>
               </q-btn>
               <q-btn
                 outline
@@ -62,7 +73,7 @@
                 @click="deletePermission(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+                <q-tooltip>ລຶບຂໍ້ມູນ</q-tooltip>
               </q-btn>
             </div>
           </q-td>
@@ -73,20 +84,20 @@
     <q-dialog v-model="dialog" persistent>
       <q-card style="width: 400px; border-radius: var(--rounded-md)">
         <q-card-section class="row items-center">
-          <div class="text-subtitle1 text-bold">ແກ້ໄຂສິດທີການໃຊ້ລະບົບ</div>
+          <div class="text-subtitle1 text-bold">ແກ້ໄຂສິດທີການຈັດການລະບົບ</div>
           <q-space />
           <q-btn outline round size="sm" color="negative" icon="close" @click="colseAddDialog" />
         </q-card-section>
         <q-card-section>
           <q-form ref="formRef">
-            <div class="input-label">ສິດທີການໃຊ້ລະບົບ</div>
+            <div class="input-label">ສິດທີການຈັດການລະບົບ</div>
             <q-input
               v-model="permission_model.name"
-              placeholder="ສິດທີການໃຊ້ລະບົບ"
+              placeholder="ສິດທີການຈັດການລະບົບ"
               outlined
-              rounded
+              class="custom-input"
               clearable
-              :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການໃຊ້ລະບົບ']"
+              :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການຈັດການລະບົບ']"
             >
               <template v-slot:prepend>
                 <q-icon name="security" />
@@ -95,8 +106,8 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right" style="padding: 20px 10px">
-          <q-btn label="ຍົກເລີກ" outline color="negative" class="border-rounded-sm" @click="colseAddDialog" />
-          <q-btn label="ບັນທຶກ" color="secondary" class="border-rounded-sm" @click="savePermission" />
+          <q-btn label="ຍົກເລີກ" outline color="negative" class="border-rounded-sm custom-btn" @click="colseAddDialog" />
+          <q-btn label="ບັນທຶກ" color="primary" class="border-rounded-sm custom-btn" @click="savePermission" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -125,15 +136,16 @@ const processing = ref<boolean>(false);
 const isAdmin = authStore.userAuth?.role === 'admin';
 const pagination = ref<TablePagination>({
   page: 1,
+  toPage: 1,
   rowsPerPage: 10,
-  rowsNumber: 1,
+  rowsNumber: 0,
 });
 
 const permissions = ref<Permission[]>([]);
 const permission_model = ref<Permission>({ id: null, name: '' });
 const columns = ref([
   // { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'center' as const },
-  { name: 'name', label: 'ສິດທີການໃຊ້ລະບົບ', field: 'name', sortable: true, align: 'left' as const },
+  { name: 'name', label: 'ສິດທີການຈັດການລະບົບ', field: 'name', sortable: true, align: 'left' as const },
   { name: 'createdAt', label: 'ວັນທີສ້າງ', field: 'createdAt', sortable: true, align: 'left' as const },
   { name: 'updatedAt', label: 'ວັນທີແກ້ໄຂ', field: 'updatedAt', sortable: true, align: 'left' as const },
   { name: 'actions', label: 'Actions', field: 'actions', sortable: false, align: 'center' as const },
@@ -152,9 +164,9 @@ const editPermission = (permission: Permission) => {
 
 const deletePermission = async (permission: Permission) => {
   await Swal.fire({
-    title: 'ລຶບສິດທີການໃຊ້ລະບົບ',
+    title: 'ລຶບສິດທີການຈັດການລະບົບ',
     icon: 'warning',
-    text: 'ຕ້ອງການລຶບສິດທີການໃຊ້ລະບົບນີ້ຫຼືບໍ່?',
+    text: 'ຕ້ອງການລຶບສິດທີການຈັດການລະບົບນີ້ຫຼືບໍ່?',
     showConfirmButton: true,
     showCancelButton: true,
     confirmButtonColor: cfmBtnColor,
