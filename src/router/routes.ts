@@ -65,8 +65,16 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'spacial-package',
+        path: 'spacial-package/:packageId',
+        props: true,
         component: () => import('pages/admin/manages/spacia-package/IndexPage.vue'),
+        meta: {
+          requiresPermission: ['all'],
+        },
+      },
+      {
+        path: 'users',
+        component: () => import('pages/admin/manages/UserPage.vue'),
         meta: {
           requiresPermission: ['all'],
         },

@@ -2,11 +2,11 @@
   <q-page class="q-pa-md">
     <div class="row cus-card-table">
       <q-table
-        title="ສິດທີຂອງຜູ້ໃຊ້ງານລະບົບ"
+        title="ສິດທີການຈັດການລະບົບ"
         flat
         :rows="permissions"
         :columns="columns"
-        row-key="roleName"
+        row-key="name"
         class="full-width"
         :pagination="pagination"
         :rows-per-page-options="[5, 10, 20, 50]"
@@ -62,7 +62,7 @@
                 @click="editPermission(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+                <q-tooltip>ແກ້ໄຂຂໍ້ມູນ</q-tooltip>
               </q-btn>
               <q-btn
                 outline
@@ -73,7 +73,7 @@
                 @click="deletePermission(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+                <q-tooltip>ລຶບຂໍ້ມູນ</q-tooltip>
               </q-btn>
             </div>
           </q-td>
@@ -84,20 +84,20 @@
     <q-dialog v-model="dialog" persistent>
       <q-card style="width: 400px; border-radius: var(--rounded-md)">
         <q-card-section class="row items-center">
-          <div class="text-subtitle1 text-bold">ແກ້ໄຂສິດທີການໃຊ້ລະບົບ</div>
+          <div class="text-subtitle1 text-bold">ແກ້ໄຂສິດທີການຈັດການລະບົບ</div>
           <q-space />
           <q-btn outline round size="sm" color="negative" icon="close" @click="colseAddDialog" />
         </q-card-section>
         <q-card-section>
           <q-form ref="formRef">
-            <div class="input-label">ສິດທີການໃຊ້ລະບົບ</div>
+            <div class="input-label">ສິດທີການຈັດການລະບົບ</div>
             <q-input
               v-model="permission_model.name"
-              placeholder="ສິດທີການໃຊ້ລະບົບ"
+              placeholder="ສິດທີການຈັດການລະບົບ"
               outlined
               class="custom-input"
               clearable
-              :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການໃຊ້ລະບົບ']"
+              :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການຈັດການລະບົບ']"
             >
               <template v-slot:prepend>
                 <q-icon name="security" />
@@ -145,7 +145,7 @@ const permissions = ref<Permission[]>([]);
 const permission_model = ref<Permission>({ id: null, name: '' });
 const columns = ref([
   // { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'center' as const },
-  { name: 'name', label: 'ສິດທີການໃຊ້ລະບົບ', field: 'name', sortable: true, align: 'left' as const },
+  { name: 'name', label: 'ສິດທີການຈັດການລະບົບ', field: 'name', sortable: true, align: 'left' as const },
   { name: 'createdAt', label: 'ວັນທີສ້າງ', field: 'createdAt', sortable: true, align: 'left' as const },
   { name: 'updatedAt', label: 'ວັນທີແກ້ໄຂ', field: 'updatedAt', sortable: true, align: 'left' as const },
   { name: 'actions', label: 'Actions', field: 'actions', sortable: false, align: 'center' as const },
@@ -164,9 +164,9 @@ const editPermission = (permission: Permission) => {
 
 const deletePermission = async (permission: Permission) => {
   await Swal.fire({
-    title: 'ລຶບສິດທີການໃຊ້ລະບົບ',
+    title: 'ລຶບສິດທີການຈັດການລະບົບ',
     icon: 'warning',
-    text: 'ຕ້ອງການລຶບສິດທີການໃຊ້ລະບົບນີ້ຫຼືບໍ່?',
+    text: 'ຕ້ອງການລຶບສິດທີການຈັດການລະບົບນີ້ຫຼືບໍ່?',
     showConfirmButton: true,
     showCancelButton: true,
     confirmButtonColor: cfmBtnColor,

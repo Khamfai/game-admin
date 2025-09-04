@@ -8,7 +8,6 @@
       map-options
       borderless
       rounded
-      fill-input
       dense
       :options="rowsPerPageOptions"
     />

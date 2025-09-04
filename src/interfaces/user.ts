@@ -1,19 +1,23 @@
+import { Permission } from './permission';
+import { Role } from './role';
+
 export interface User {
-  id: number;
+  id?: number | null;
   username: string;
+  password?: string | null;
   email?: string | null;
   phone?: string | null;
-  roleId: number;
-  percent: number;
+  roleId: number | null;
+  percent: number | null;
   userKey?: string | null;
-  balance: number;
+  balance?: number | null;
   callBackUrl?: string | null;
-  isEnable: boolean;
-  isDelete: boolean;
+  isEnable: boolean | null;
+  isDelete?: boolean | null;
   createdAt?: number | null;
   updatedAt?: number | null;
-  role?: string | null;
-  permissions?: string[] | null;
+  userPermissions?: any[] | null;
+  roles?: Partial<Role> | null;
 }
 
 export interface UserRegister {

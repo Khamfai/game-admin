@@ -9,13 +9,13 @@
           outlined
           rounded
           @keyup.enter="searchPackage()"
-          @update:model-value="search.length == 0 ? searchPackage() : null"
+          @update:model-value="search && search.length == 0 ? searchPackage() : null"
         >
           <template v-slot:prepend>
             <q-btn icon="search" flat round color="primary" @click="searchPackage" />
           </template>
 
-          <template v-if="search.length > 0" v-slot:append>
+          <template v-if="search && search.length > 0" v-slot:append>
             <q-btn
               icon="close"
               unelevated
@@ -24,7 +24,7 @@
               color="grey-4"
               text-color="black"
               @click="
-                search = '';
+                search = null;
                 searchPackage();
               "
             />
@@ -98,20 +98,6 @@
             </div>
           </q-td>
         </template>
-        <template v-slot:body-cell-isManual="props">
-          <q-td :props="props">
-            <div class="row items-center">
-              <q-toggle
-                v-model="props.row.isManual"
-                checked-icon="check"
-                unchecked-icon="clear"
-                color="primary"
-                :label="props.row.isManual ? 'ເປີດ' : 'ປິດ'"
-                @update:model-value="updatePackageManual(props.row)"
-              />
-            </div>
-          </q-td>
-        </template>
         <template v-slot:body-cell-isEnable="props">
           <q-td :props="props">
             <div class="row items-center">
@@ -150,9 +136,28 @@
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
-            <div class="row items-center justify-around" style="width: 100px">
+            <div class="row items-center justify-around" style="width: 150px">
+              <q-btn
+                outline
+                round
+                size="sm"
+                color="primary"
+                icon="mdi-dots-horizontal"
+                @click="goSpacialPackage(props.row)"
+                :disable="!isAdmin"
+              ></q-btn>
+              <q-btn
+                icon="mdi-translate"
+                outline
+                round
+                size="sm"
+                color="primary"
+                :disable="!isAdmin"
+                @click="translatePackage(props.row)"
+              ></q-btn>
+
               <q-btn outline round size="sm" color="primary" icon="edit" @click="editPackage(props.row)" :disable="!isAdmin">
-                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+                <q-tooltip>ແກ້ໄຂຂໍ້ມູນ</q-tooltip>
               </q-btn>
               <q-btn
                 outline
@@ -163,7 +168,7 @@
                 @click="deletePackage(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+                <q-tooltip>ລຶບຂໍ້ມູນ</q-tooltip>
               </q-btn>
             </div>
           </q-td>
@@ -308,7 +313,6 @@
               emit-value
               map-options
               required
-              fill-input
               clearable
               @update:model-value="getGames(package_model.providerId)"
               :rules="[(val) => val !== null || 'ກະລຸນາໃສ່ຜູ້ໃຫ້ບໍລິການ']"
@@ -387,11 +391,12 @@ import { Provider } from 'src/interfaces/provider';
 import { Game } from 'src/interfaces/game';
 import { QSelect } from 'quasar';
 import { useRouter } from 'vue-router';
+import { usePackageStore } from 'src/stores/package-store';
 
 const router = useRouter();
 const formRef = ref<any>(null);
 const authStore = useAuthStore();
-
+const packageStore = usePackageStore();
 const packageService = package_service();
 const providerService = provider_service();
 const gameService = game_service();
@@ -404,13 +409,13 @@ const isAdmin = authStore.userAuth?.role === 'admin';
 const pagination = ref<TablePagination>({
   page: 1,
   toPage: 1,
-  rowsPerPage: 10,
+  rowsPerPage: 30,
   rowsNumber: 0,
 });
 // const gameTotal = ref<number>(0);
 // const nextPage = ref<number>(50);
 
-const search = ref<string>('');
+const search = ref<string | null>(null);
 const providers = ref<Provider[]>([]);
 const games = ref<Game[]>([]);
 const gameOptions = ref<Game[]>([]);
@@ -422,7 +427,6 @@ const package_model = ref<Package>({
   packageName: '',
   sourcePrice: 0,
   price: 0,
-  isManual: false,
   isEnable: true,
   description: null,
   otp_path: null,
@@ -439,12 +443,16 @@ const columns = ref([
   { name: 'price', label: 'ລາຄາຂອງລະບົບ', field: 'price', sortable: true, align: 'left' as const },
   { name: 'quantity', label: 'ຈຳນວນ', field: 'quantity', sortable: true, align: 'center' as const },
   { name: 'discount', label: 'ສ່ວນຫຼຸດ', field: 'discount', sortable: true, align: 'left' as const },
-  { name: 'isManual', label: 'ກຳນົດລາຄາ', field: 'isManual', sortable: true, align: 'left' as const },
   { name: 'isEnable', label: 'ເປີດໃຊ້ງານ', field: 'isEnable', sortable: true, align: 'left' as const },
   { name: 'createdAt', label: 'ວັນທີສ້າງ', field: 'createdAt', sortable: true, align: 'left' as const },
   { name: 'updatedAt', label: 'ວັນທີແກ້ໄຂ', field: 'updatedAt', sortable: true, align: 'left' as const },
   { name: 'actions', label: 'Actions', field: 'actions', sortable: false, align: 'center' as const },
 ]);
+
+const goSpacialPackage = async (packageData: Package) => {
+  packageStore.setPackage(packageData);
+  await router.push({ path: `/admin/spacial-package/${packageData.id}` });
+};
 
 const clearData = () => {
   dialog.value = false;
@@ -455,7 +463,6 @@ const clearData = () => {
     packageName: '',
     sourcePrice: 0,
     price: 0,
-    isManual: false,
     isEnable: true,
     description: null,
     otp_path: null,
@@ -467,6 +474,7 @@ const clearData = () => {
 
 // Pagination component event handlers
 const onRowsPerPageChange = async (value: number) => {
+  if (pagination.value.rowsPerPage == value) return;
   pagination.value.rowsPerPage = value;
   pagination.value.page = 1;
   await getPackages(pagination.value);
@@ -599,6 +607,31 @@ const updatePackage = async () => {
   });
 };
 
+const translatePackage = async (val: Package) => {
+  try {
+    processing.value = true;
+    await packageService.translatePackage(val.id!).then(async (response) => {
+      processing.value = false;
+      await Swal.fire({
+        title: 'ສຳເລັດ',
+        text: 'ແປກຂໍ້ມູນສຳເລັດແລ້ວ',
+        icon: response.code == '200' ? 'success' : 'error',
+        timer: dialogDelay,
+        confirmButtonColor: cfmBtnColor,
+      });
+      void getPackages(pagination.value);
+    });
+  } catch (error) {
+    processing.value = false;
+    await Swal.fire({
+      title: (error as Error).message,
+      icon: 'error',
+      timer: dialogDelay,
+      confirmButtonColor: cfmBtnColor,
+    });
+  }
+};
+
 const enablePackage = async (val: Package) => {
   await packageService.updatePackage(val.id!, { isEnable: val.isEnable }).then(async (response) => {
     await Swal.fire({
@@ -611,25 +644,9 @@ const enablePackage = async (val: Package) => {
   });
 };
 
-const updatePackageManual = async (val: Package) => {
-  await packageService.updatePackage(val.id!, { isManual: val.isManual }).then(async (response) => {
-    await Swal.fire({
-      title: 'ສຳເລັດ',
-      text: val.isManual ? 'ເປີດໃຊ້ງານສຳເລັດແລ້ວ' : 'ປິດໃຊ້ງານສຳເລັດແລ້ວ',
-      icon: response.code == '200' ? 'success' : 'error',
-      timer: dialogDelay,
-      confirmButtonColor: cfmBtnColor,
-    });
-    if (val.isManual == true && val._count?.spacialPackages == 0) {
-      await router.push('/admin/spacial-package');
-    }
-  });
-};
-
 const getPackages = async (options?: TablePagination) => {
   loading.value = true;
   try {
-    if (options && pagination.value.page == options.page && search.value == null) return;
     const response = await packageService.getPackages({
       page: options?.page ?? null,
       limit: options?.rowsPerPage ?? null,

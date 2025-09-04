@@ -9,13 +9,13 @@
           outlined
           rounded
           @keyup.enter="searchGame()"
-          @update:model-value="search.length == 0 ? searchGame() : null"
+          @update:model-value="search && search.length == 0 ? searchGame() : null"
         >
           <template v-slot:prepend>
             <q-btn icon="search" flat round color="primary" @click="searchGame" />
           </template>
 
-          <template v-if="search.length > 0" v-slot:append>
+          <template v-if="search && search.length > 0" v-slot:append>
             <q-btn
               icon="close"
               unelevated
@@ -24,7 +24,7 @@
               color="grey-4"
               text-color="black"
               @click="
-                search = '';
+                search = null;
                 searchGame();
               "
             />
@@ -117,7 +117,7 @@
           <q-td :props="props">
             <div class="row items-center justify-around" style="width: 100px">
               <q-btn outline round size="sm" color="primary" icon="edit" @click="editGame(props.row)" :disable="!isAdmin">
-                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+                <q-tooltip>ແກ້ໄຂຂໍ້ມູນ</q-tooltip>
               </q-btn>
               <q-btn
                 outline
@@ -128,7 +128,7 @@
                 @click="deleteGame(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+                <q-tooltip>ລຶບຂໍ້ມູນ</q-tooltip>
               </q-btn>
             </div>
           </q-td>
@@ -213,7 +213,6 @@
               emit-value
               map-options
               required
-              fill-input
               clearable
               :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ປະເພດເກມ']"
             >
@@ -233,7 +232,6 @@
               emit-value
               map-options
               required
-              fill-input
               clearable
               :rules="[(val) => val !== null || 'ກະລຸນາໃສ່ຜູ້ໃຫ້ບໍລິການ']"
             >
@@ -267,10 +265,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { formatDate, cfmBtnColor, cfmBtnText, cancelBtnColor, cancelBtnText, dialogDelay } from 'src/utils/utils';
 import { useAuthStore } from 'src/stores/auth-store';
-import { Pagination, TablePagination } from 'src/interfaces/pagination';
+import { TablePagination } from 'src/interfaces/pagination';
 import Swal from 'sweetalert2';
 import { game_service } from 'src/services/game.service';
 import { Game } from 'src/interfaces/game';
@@ -293,7 +291,7 @@ const pagination = ref<TablePagination>({
   rowsPerPage: 30,
   rowsNumber: 0,
 });
-const search = ref<string>('');
+const search = ref<string | null>(null);
 const gameTypes = ref<string[]>([]);
 const providers = ref<Provider[]>([]);
 const games = ref<Game[]>([]);
@@ -474,7 +472,6 @@ const getGameTypes = async () => {
 const getGames = async (options?: TablePagination) => {
   loading.value = true;
   try {
-    if (options && pagination.value.page == options.page && search.value == null) return;
     const response = await gameService.getGames({
       page: options?.page ?? null,
       limit: options?.rowsPerPage ?? null,
@@ -500,6 +497,7 @@ const searchGame = async () => {
 
 // Pagination component event handlers
 const onRowsPerPageChange = async (value: number) => {
+  if (pagination.value.rowsPerPage == value) return;
   pagination.value.rowsPerPage = value;
   pagination.value.page = 1;
   await getGames(pagination.value);
@@ -540,7 +538,7 @@ onMounted(async () => {
   try {
     void getGameTypes();
     void getProviders();
-    await getGames(pagination.value);
+    // await getGames(pagination.value);
   } catch (error) {
     await Swal.fire({
       title: (error as Error).message,

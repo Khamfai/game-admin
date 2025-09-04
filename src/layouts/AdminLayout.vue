@@ -55,7 +55,7 @@ const linksList: EssentialLinkProps[] = [
     title: 'Sellers',
     caption: 'ຕົວແທນການຂາຍ',
     icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
+    link: '/#/admin/users',
   },
   {
     title: 'Providers',

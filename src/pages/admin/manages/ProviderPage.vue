@@ -8,12 +8,12 @@
           outlined
           rounded
           class="custom-input"
-          @update:model-value="search.length == 0 ? searchProvider() : null"
+          @update:model-value="search && search.length == 0 ? searchProvider() : null"
         >
           <template v-slot:prepend>
             <q-btn icon="search" flat round color="primary" @click="searchProvider" />
           </template>
-          <template v-if="search.length > 0" v-slot:append>
+          <template v-if="search && search.length > 0" v-slot:append>
             <q-btn
               icon="close"
               unelevated
@@ -22,7 +22,7 @@
               color="grey-4"
               text-color="black"
               @click="
-                search = '';
+                search = null;
                 searchProvider();
               "
             />
@@ -126,7 +126,7 @@
                 @click="editProvider(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ແກ້ໄຂສິດທີ</q-tooltip>
+                <q-tooltip>ແກ້ໄຂຂໍ້ມູນ</q-tooltip>
               </q-btn>
               <q-btn
                 outline
@@ -137,7 +137,7 @@
                 @click="deleteProvider(props.row)"
                 :disable="!isAdmin"
               >
-                <q-tooltip>ລຶບສິດທີ</q-tooltip>
+                <q-tooltip>ລຶບຂໍ້ມູນ</q-tooltip>
               </q-btn>
             </div>
           </q-td>
@@ -282,7 +282,6 @@
                 </q-input>
               </div>
             </div>
-
             <q-toggle
               v-model="provider_model.isEnable"
               checked-icon="check"
@@ -338,7 +337,7 @@ const pagination = ref<TablePagination>({
   rowsPerPage: 30,
   rowsNumber: 0,
 });
-const search = ref<string>('');
+const search = ref<string | null>(null);
 const providers = ref<Provider[]>([]);
 const provider_model = ref<Provider>({
   id: null,
@@ -384,6 +383,7 @@ const clearData = () => {
 
 // Pagination component event handlers
 const onRowsPerPageChange = async (value: number) => {
+  if (pagination.value.rowsPerPage == value) return;
   pagination.value.rowsPerPage = value;
   pagination.value.page = 1;
   await getProviders(pagination.value);
@@ -526,8 +526,6 @@ const enableProvider = async (val: Provider) => {
 const getProviders = async (options?: TablePagination) => {
   loading.value = true;
   try {
-    if (options && pagination.value.page == options.page && search.value == null) return;
-
     const response = await providerService.getProviders({
       page: options?.page ?? null,
       limit: options?.rowsPerPage ?? null,
