@@ -6,7 +6,7 @@
 
     <q-item-section>
       <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption style="color: var(--text-color-secondary)">{{ caption }}</q-item-label>
+      <q-item-label caption style="color: var(--text-color-primary)">{{ caption }}</q-item-label>
     </q-item-section>
   </q-item>
 </template>

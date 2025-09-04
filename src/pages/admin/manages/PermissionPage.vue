@@ -14,14 +14,25 @@
         :loading="loading"
       >
         <template v-slot:top-right>
-          <q-btn color="secondary" outline round icon="add" size="sm" @click="dialog = true" />
+          <q-btn color="primary" outline round icon="add" size="sm" @click="dialog = true" />
         </template>
-
+        <template v-slot:no-data>
+          <div class="row items-center justify-center text-center" style="width: 100%; height: 200px">
+            <div v-if="loading == true" class="q-gutter-y-md">
+              <q-spinner v-if="loading" name="dots" color="primary" size="60px" />
+              <div class="text-subtitle2">Wait for data loading...</div>
+            </div>
+            <div v-else class="q-gutter-y-md">
+              <q-icon name="mdi-database-remove" size="60px" color="primary" />
+              <div class="text-subtitle2">Opps! Not found data</div>
+            </div>
+          </div>
+        </template>
         <template v-slot:body-cell-createdAt="props">
           <q-td :props="props">
             <div>
               <q-icon name="schedule" size="xs" color="green" class="q-mr-sm" />
-              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              {{ formatDate(props.value) }}
               <q-tooltip>
                 {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
               </q-tooltip>
@@ -32,7 +43,7 @@
           <q-td :props="props">
             <div>
               <q-icon name="update" size="xs" color="orange" class="q-mr-sm" />
-              {{ formatDate(props.value, 'DD/MM/YYYY') }}
+              {{ formatDate(props.value) }}
               <q-tooltip>
                 {{ formatDate(props.value, 'dddd, MMMM Do YYYY, h:mm:ss a') }}
               </q-tooltip>
@@ -46,7 +57,7 @@
                 outline
                 round
                 size="sm"
-                color="secondary"
+                color="primary"
                 icon="edit"
                 @click="editPermission(props.row)"
                 :disable="!isAdmin"
@@ -84,7 +95,7 @@
               v-model="permission_model.name"
               placeholder="ສິດທີການໃຊ້ລະບົບ"
               outlined
-              rounded
+              class="custom-input"
               clearable
               :rules="[(val) => val.length > 0 || 'ກະລຸນາໃສ່ສິດທີການໃຊ້ລະບົບ']"
             >
@@ -95,8 +106,8 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right" style="padding: 20px 10px">
-          <q-btn label="ຍົກເລີກ" outline color="negative" class="border-rounded-sm" @click="colseAddDialog" />
-          <q-btn label="ບັນທຶກ" color="secondary" class="border-rounded-sm" @click="savePermission" />
+          <q-btn label="ຍົກເລີກ" outline color="negative" class="border-rounded-sm custom-btn" @click="colseAddDialog" />
+          <q-btn label="ບັນທຶກ" color="primary" class="border-rounded-sm custom-btn" @click="savePermission" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -125,8 +136,9 @@ const processing = ref<boolean>(false);
 const isAdmin = authStore.userAuth?.role === 'admin';
 const pagination = ref<TablePagination>({
   page: 1,
+  toPage: 1,
   rowsPerPage: 10,
-  rowsNumber: 1,
+  rowsNumber: 0,
 });
 
 const permissions = ref<Permission[]>([]);

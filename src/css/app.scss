@@ -10,7 +10,7 @@
   --text-color: #061227;
   --background-color: #061227;
   --header-background-color: #d3d3d4;
-  --text-color-secondary: #030108b4;
+  --text-color-primary: #030108b4;
 
   --rounded-sm: 5px;
   --rounded-md: 10px;
@@ -20,6 +20,8 @@
   --rounded-3xl: 30px;
 
   --input-h: 46px;
+
+  --color-secondary: #ffffff4a;
 }
 
 body {
@@ -78,21 +80,31 @@ body {
   padding: 2px;
 }
 
+.custom-btn {
+  width: 100px;
+}
+
 .input-label {
   // font-size: 14px;
   font-weight: 500;
   padding-top: 10px;
 }
 
-.q-field__control {
+.custom-input .q-field__control {
+  height: var(--input-h);
+  border-radius: var(--rounded-md);
+}
+
+.custom-input .q-field__marginal {
   height: var(--input-h);
 }
 
-.q-field__marginal {
-  height: var(--input-h);
+.q-field--auto-height .q-field__control,
+.q-field--auto-height .q-field__native {
+  min-height: var(--input-h);
 }
 
-.q-field--outlined.q-field--rounded .q-field__control {
+.custom-input .q-field--outlined .q-field--rounded .q-field__control {
   height: var(--input-h);
 }
 

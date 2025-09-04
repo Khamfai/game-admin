@@ -4,24 +4,25 @@
     <div class="card col-md-4 col-sm-8 col-xs-12">
       <div class="row justify-start">
         <q-btn
-          label="Login"
+          color="secondary"
+          style="background-color: #ffffff4a"
           size="md"
           flat
           icon="mdi-arrow-left"
-          style="height: 45px"
+          round
           no-caps
           @click="router.push('/login')"
         />
       </div>
       <div>
-        <h4 class="text-h4 text-center text-bold">ລົງທະບຽນ</h4>
+        <h4 class="text-h4 text-center text-bold" style="color: var(--text-color)">ລົງທະບຽນ</h4>
       </div>
       <q-card-section class="q-gutter-y-xs">
-        <div class="text-bold input-label">Username</div>
+        <div class="text-bold input-label" style="color: var(--text-color)">Username</div>
         <q-input
           v-model="user.username"
           outlined
-          rounded
+          class="custom-input"
           placeholder="Enter username"
           :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້']"
         >
@@ -30,26 +31,26 @@
           </template>
         </q-input>
 
-        <div class="text-bold input-label">Email</div>
-        <q-input v-model="user.email" outlined placeholder="Enter email">
+        <div class="text-bold input-label" style="color: var(--text-color)">Email</div>
+        <q-input v-model="user.email" class="custom-input" outlined placeholder="Enter email">
           <template v-slot:prepend>
-            <q-icon name="mdi-account-circle" />
+            <q-icon name="mdi-email" />
           </template>
         </q-input>
 
-        <div class="text-bold input-label">Phone</div>
-        <q-input v-model="user.phone" outlined rounded placeholder="Enter phone number">
+        <div class="text-bold input-label" style="color: var(--text-color)">Phone</div>
+        <q-input v-model="user.phone" outlined class="custom-input" placeholder="Enter phone number">
           <template v-slot:prepend>
-            <q-icon name="mdi-account-circle" />
+            <q-icon name="mdi-phone" />
           </template>
         </q-input>
 
-        <div class="text-bold input-label">Password</div>
+        <div class="text-bold input-label" style="color: var(--text-color)">Password</div>
         <q-input
           v-model="user.password"
           :type="isVisible ? 'text' : 'password'"
+          class="custom-input"
           outlined
-          rounded
           placeholder="Enter password"
           :rules="[(val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ']"
         >
@@ -61,12 +62,12 @@
           </template>
         </q-input>
 
-        <div class="text-bold input-label">Confirm Password</div>
+        <div class="text-bold input-label" style="color: var(--text-color)">Confirm Password</div>
         <q-input
           v-model="confirmPassword"
           :type="isVisible ? 'text' : 'password'"
+          class="custom-input"
           outlined
-          rounded
           placeholder="Enter password"
           :rules="[
             (val) => val.length > 0 || 'ກະລຸນາປ້ອນລະຫັດຜ່ານ',
@@ -85,7 +86,7 @@
         <q-btn
           label="Register"
           size="md"
-          color="positive"
+          color="primary"
           rounded
           class="full-width"
           style="height: 45px"

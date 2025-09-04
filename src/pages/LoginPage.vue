@@ -1,17 +1,17 @@
 <template>
   <!-- <q-page> -->
   <div class="fullscreen bg row justify-center items-center">
-    <div class="card col-lg-4 col-md-6 col-sm-10 col-xs-12">
+    <div class="card col-lg-4 col-md-6 col-sm-8 col-xs-12">
       <q-card-section>
         <div class="row justify-center">
-          <q-avatar size="80px" color="primary" text-color="white">
+          <q-avatar size="80px" color="secondary" text-color="white">
             <q-icon name="mdi-account-circle" size="60px" />
           </q-avatar>
         </div>
-        <h4 class="text-h4 text-center text-bold">Sign In</h4>
+        <h4 class="text-h4 text-center text-bold" style="color: var(--text-color)">Sign In</h4>
       </q-card-section>
       <q-card-section class="q-gutter-y-md">
-        <div class="text-bold">Username</div>
+        <div class="text-bold" style="color: var(--text-color)">Username</div>
         <q-input
           v-model="username"
           outlined
@@ -25,7 +25,7 @@
           </template>
         </q-input>
 
-        <div class="text-bold">Password</div>
+        <div class="text-bold" style="color: var(--text-color)">Password</div>
         <q-input
           v-model="password"
           :type="isVisible ? 'text' : 'password'"
@@ -62,7 +62,7 @@
         />
         <div class="row justify-between q-gutter-x-md" style="width: 100%">
           <div class="cols-4"><a style="text-decoration: none" href="/#/forgot-password">Forgot password?</a></div>
-          <div class="cols-8">
+          <div class="cols-8" style="color: var(--text-color)">
             Get starting to seller account
             <a style="text-decoration: none; font-weight: bold" href="/#/signup">Sign up</a>
           </div>
@@ -151,7 +151,7 @@ const handleLogin = async () => {
 
 .card {
   color: var(--q-primary);
-  background-color: rgba(212, 212, 212, 0.6);
+  background-color: rgba(212, 212, 212, 0.7);
   border-radius: 10px;
   box-shadow: rgba(1, 50, 108, 0.6) 0px 5px 50px;
   padding: 20px;

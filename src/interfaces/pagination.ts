@@ -6,8 +6,11 @@ export interface Pagination {
   search?: string | null;
 }
 
-export interface TablePagination{
+export interface TablePagination {
+  sortBy?: string | null;
+  descending?: boolean;
   page: number;
+  toPage?: number | null;
   rowsPerPage: number;
   rowsNumber: number;
 }
