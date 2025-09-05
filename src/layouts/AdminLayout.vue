@@ -4,9 +4,56 @@
       <q-toolbar>
         <q-btn flat dense round color="primary" icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Game Service </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>
+          <q-btn outline size="sm" round color="primary" icon="account_circle">
+            <q-popup-proxy
+              transition-show="slide-left"
+              transition-hide="slide-right"
+              style="border-radius: var(--rounded-sm); width: 200px; padding: 10px 0px 10px 0px"
+            >
+              <q-list>
+                <div class="column items-center justify-center">
+                  <q-item>
+                    <q-avatar color="primary">
+                      <q-icon name="mdi-account-circle-outline" color="white" />
+                    </q-avatar>
+                  </q-item>
+                  <q-item>
+                    <div class="column items-center justify-center">
+                      <q-item-label
+                        style="
+                          font-weight: 500;
+                          color: #26a69a;
+                          background-color: #26a69a1a;
+                          padding: 5px;
+                          border-radius: var(--rounded-sm);
+                        "
+                        >ຍອດເງິນ: {{ profile?.balance ?? 0 }} LAK</q-item-label
+                      >
+                      <q-item-label>{{ profile?.role }}</q-item-label>
+                      <q-item-label>{{ profile?.email ?? profile?.phone }}</q-item-label>
+                    </div>
+                  </q-item>
+                </div>
+                <q-separator  />
+                <q-item>
+                  <q-btn
+                    color="negative"
+                    icon="logout"
+                    class="full-width"
+                    outline
+                    rounded
+                    label="Logout"
+                    @click="logout"
+                    v-close-popup
+                  />
+                </q-item>
+              </q-list>
+            </q-popup-proxy>
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -31,6 +78,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useAuthStore } from 'src/stores/auth-store';
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
+import { cfmBtnColor } from 'src/utils/utils';
+import { cancelBtnColor } from 'src/utils/utils';
+import useProfileStore from 'src/stores/profile-store';
+
+const authStore = useAuthStore();
+const router = useRouter();
+const profileStore = useProfileStore();
+const profile = profileStore.getProfile();
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -93,6 +151,24 @@ const leftDrawerOpen = ref(false);
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+async function logout() {
+  await Swal.fire({
+    title: 'Warning',
+    text: 'ຕ້ອງການອອກຈາກລະບົບ ຫຼື ບໍ່?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: cfmBtnColor,
+    cancelButtonColor: cancelBtnColor,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      authStore.logout();
+      void router.push('/login');
+    }
+  });
 }
 </script>
 
