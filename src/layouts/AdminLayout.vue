@@ -4,14 +4,14 @@
       <q-toolbar>
         <q-btn flat dense round color="primary" icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Game Service </q-toolbar-title>
 
         <div>
           <q-btn outline size="sm" round color="primary" icon="account_circle">
             <q-popup-proxy
               transition-show="slide-left"
               transition-hide="slide-right"
-              style="border-radius: var(--rounded-sm)"
+              style="border-radius: var(--rounded-sm); width: 200px; padding: 10px 0px 10px 0px"
             >
               <q-list>
                 <div class="column items-center justify-center">
@@ -22,15 +22,33 @@
                   </q-item>
                   <q-item>
                     <div class="column items-center justify-center">
-                      <q-item-label>{{ profile?.balance ?? 0 }} LAK</q-item-label>
+                      <q-item-label
+                        style="
+                          font-weight: 500;
+                          color: #26a69a;
+                          background-color: #26a69a1a;
+                          padding: 5px;
+                          border-radius: var(--rounded-sm);
+                        "
+                        >ຍອດເງິນ: {{ profile?.balance ?? 0 }} LAK</q-item-label
+                      >
                       <q-item-label>{{ profile?.role }}</q-item-label>
                       <q-item-label>{{ profile?.email ?? profile?.phone }}</q-item-label>
                     </div>
                   </q-item>
                 </div>
-                <q-separator />
+                <q-separator  />
                 <q-item>
-                  <q-btn color="primary" icon="logout" outline rounded label="Logout" @click="logout" v-close-popup />
+                  <q-btn
+                    color="negative"
+                    icon="logout"
+                    class="full-width"
+                    outline
+                    rounded
+                    label="Logout"
+                    @click="logout"
+                    v-close-popup
+                  />
                 </q-item>
               </q-list>
             </q-popup-proxy>
@@ -58,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useRouter } from 'vue-router';
