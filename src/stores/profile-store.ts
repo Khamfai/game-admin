@@ -12,9 +12,14 @@ const useProfileStore = defineStore(
     };
 
     const getProfile = () => {
+      if (!profile.value) {
+        profile.value = localStorage.getItem('profile') ? JSON.parse(localStorage.getItem('profile')!)?.profile : null;
+      }
+      console.log(profile.value);
       return profile.value;
     };
 
+    getProfile();
     return {
       profile,
       setProfile,
